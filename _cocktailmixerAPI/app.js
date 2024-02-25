@@ -23,7 +23,7 @@ const options = {
 };
 
 const openapiSpecification = swaggerJsdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 app.use(express.json());
 
@@ -62,16 +62,58 @@ app.get('/config', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /config:
+ *   post:
+ *     summary: Set the bottle configuration
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bottle1:
+ *                 type: integer
+ *               bottle2:
+ *                 type: integer
+ *               bottle3:
+ *                 type: integer
+ *               bottle4:
+ *                 type: integer
+ *               bottle5:
+ *                 type: integer
+ *               bottle6:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Config file has been updated
+ */
 app.post('/config', async (req, res) => {
     try {
         await config.setConfig(db, req.body);
         res.send('Config file has been updated');
     } catch (error) {
-        console.log(error);
-        res.status(505).send('Error occurred');
+        if (error.message === "Config is empty or undefined") {
+            console.log(error);
+            res.status(400).send('Config is empty or undefined');
+        } else {
+            console.log(error);
+            res.status(505).send('Error occurred');
+        }
     }
 });
 
+/**
+ * @swagger
+ * /ingredients:
+ *   get:
+ *     summary: Retrieve all ingredients
+ *     responses:
+ *       200:
+ *         description: Ingredients list
+ */
 app.get('/ingredients', async (req, res) => {
     try {
         const ingredientsData = await ingredients.getIngredients(db);
@@ -82,16 +124,70 @@ app.get('/ingredients', async (req, res) => {
     }
 });
 
-app.get('/ingredients/:id', async (req, res) => {
+/**
+ * @swagger
+ * /ingredients/mostUsed:
+ *   get:
+ *     summary: Retrieve the most popular ingredients
+ *     responses:
+ *       200:
+ *         description: Ingredients list
+ */
+app.get('/ingredients/mostUsed', async (req, res) => {
     try {
-        const ingredient = await ingredients.getIngredientById(db, req.params.id);
-        res.send(ingredient);
+        const ingredientsData = await ingredients.getMostUsedIngredients(db);
+        res.send(ingredientsData);
     } catch (error) {
         console.log(error);
         res.status(505).send('Error occurred');
     }
 });
 
+/**
+ * @swagger
+ * /ingredients/{id}:
+ *   get:
+ *     summary: Retrieve ingredient by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *         description: id of the ingredient
+ *     responses:
+ *       200:
+ *         description: Ingredient object
+ */
+app.get('/ingredients/:id', async (req, res) => {
+    try {
+        if(isNaN(req.params.id)) {
+            res.status(400).send('Id must be a number');
+            return;
+        }
+        const ingredient = await ingredients.getIngredientById(db, req.params.id);
+        res.send(ingredient);
+    } catch (error) {
+        if (error.message === "Ingredient not found") {
+            console.log(error);
+            res.status(404).send('Ingredient not found');
+        } else {
+            console.log(error);
+            res.status(505).send('Error occurred');
+        }
+    }
+});
+
+/**
+ * @swagger
+ * /cocktails/possible:
+ *   get:
+ *     summary: Retrieve possible cocktails based on the current bottle configuration
+ *     responses:
+ *       200:
+ *         description: Cocktail list
+ */
 app.get('/cocktails/possible', async (req, res) => {
     try {
         const possibleCocktails = await cocktails.getPossibleCocktails(db);
