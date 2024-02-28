@@ -8,6 +8,7 @@ async function orderCocktail(db, idDrink, glassSize) {
     await createOrderTable(db);
     await db.run('INSERT INTO orders (idDrink, glassSize) VALUES (?, ?)', idDrink, glassSize);
     let id = await db.get('SELECT id FROM orders ORDER BY id DESC LIMIT 1');
+    
     return id;
 }
 
