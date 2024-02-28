@@ -3,6 +3,7 @@ const sqlite3 = require("sqlite3").verbose();
 const config = require('./application/config.js');
 const ingredients = require('./application/ingredients.js');
 const cocktails = require('./application/cocktails.js');
+const order = require('./application/order.js');
 const { open } = require('sqlite');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
@@ -12,15 +13,43 @@ const app = express();
 const PORT = 3000;
 
 const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Express API with Swagger',
-      version: '1.0.0',
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Cocktail Mixer API',
+            version: '1.0.0',
+        },
     },
-  },
-  apis: ['./app.js'],
+    apis: ['./app.js'],
 };
+
+/**
+ * @swagger
+ * tags:
+ *   name: Config
+ *   description: Configure the bottle configuration.
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Cocktails
+ *   description: Cocktails Endpoints.
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Ingredients
+ *   description: Ingredients Endpoints.
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Order
+ *   description: Order Endpoints.
+ */
 
 const openapiSpecification = swaggerJsdoc(options);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
@@ -47,6 +76,7 @@ initializeDbConnection(db_name).catch(error => {
  * @swagger
  * /config:
  *   get:
+ *     tags: [Config]
  *     summary: Retrieve the bottle configuration
  *     responses:
  *       200:
@@ -66,6 +96,7 @@ app.get('/config', async (req, res) => {
  * @swagger
  * /config:
  *   post:
+ *     tags: [Config]
  *     summary: Set the bottle configuration
  *     requestBody:
  *       required: true
@@ -109,6 +140,7 @@ app.post('/config', async (req, res) => {
  * @swagger
  * /ingredients:
  *   get:
+ *     tags: [Ingredients]
  *     summary: Retrieve all ingredients
  *     responses:
  *       200:
@@ -128,6 +160,7 @@ app.get('/ingredients', async (req, res) => {
  * @swagger
  * /ingredients/mostUsed:
  *   get:
+ *     tags: [Ingredients]
  *     summary: Retrieve the most popular ingredients
  *     responses:
  *       200:
@@ -147,6 +180,7 @@ app.get('/ingredients/mostUsed', async (req, res) => {
  * @swagger
  * /ingredients/{id}:
  *   get:
+ *     tags: [Ingredients]
  *     summary: Retrieve ingredient by id
  *     parameters:
  *       - in: path
@@ -162,7 +196,7 @@ app.get('/ingredients/mostUsed', async (req, res) => {
  */
 app.get('/ingredients/:id', async (req, res) => {
     try {
-        if(isNaN(req.params.id)) {
+        if (isNaN(req.params.id)) {
             res.status(400).send('Id must be a number');
             return;
         }
@@ -183,6 +217,7 @@ app.get('/ingredients/:id', async (req, res) => {
  * @swagger
  * /cocktails/possible:
  *   get:
+ *     tags: [Cocktails]
  *     summary: Retrieve possible cocktails based on the current bottle configuration
  *     responses:
  *       200:
@@ -197,6 +232,113 @@ app.get('/cocktails/possible', async (req, res) => {
         res.status(505).send('Error occurred');
     }
 });
+
+/**
+ * @swagger
+ * /order:
+ *  post:
+ *   tags: [Order]
+ *   summary: Order a new cocktail
+ *   requestBody:
+ *     required: true
+ *     content:
+ *       application/json:
+ *         schema:
+ *           type: object
+ *           properties:
+ *             idDrink:
+ *               type: integer
+ *             glassSize:
+ *               type: integer
+ *   responses:
+ *     200:
+ *       description: Config file has been updated
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: "Your cocktail is producing"
+ *               orderId:
+ *                 type: integer
+ *                 example: 1
+ *     404:
+ *       description: Cocktail not found
+ */
+app.post('/order', async (req, res) => {
+    try {
+        let id = await order.orderCocktail(db, req.body.idDrink, req.body.glassSize);
+        res.send({ message: "Your cocktail is producing", orderId: id.id });
+    } catch (error) {
+        if (error.message === "Cocktail not found") {
+            console.log(error);
+            res.status(404).send('Cocktail not found');
+        } else {
+            console.log(error);
+            res.status(505).send('Error occurred');
+        }
+    }
+});
+
+/**
+ * @swagger
+ * /order:
+ *   get:
+ *     tags: [Order]
+ *     summary: Retrieve all orders
+ *     responses:
+ *       200:
+ *         description: Orders list
+ */
+app.get('/order', async (req, res) => {
+    try {
+        const orders = await order.getOrders(db);
+        res.send(orders);
+    } catch (error) {
+        console.log(error);
+        res.status(505).send('Error occurred');
+    }
+});
+
+/**
+ * @swagger
+ * /order/{id}:
+ *   get:
+ *     tags: [Order]
+ *     summary: Retrieve order by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           format: int64
+ *         description: id of the order
+ *     responses:
+ *       200:
+ *         description: Order object
+ */
+app.get('/order/:id', async (req, res) => {
+    try {
+        if (isNaN(req.params.id)) {
+            res.status(400).send('Id must be a number');
+            return;
+        }
+        const orderBack = await order.getOrderById(db, req.params.id);
+        res.send(orderBack);
+    } catch (error) {
+        if (error.message === "Order not found") {
+            console.log(error);
+            res.status(404).send('Order not found');
+        } else {
+            console.log(error);
+            res.status(505).send('Error occurred');
+        }
+    }
+})
+
 
 app.listen(PORT, (error) => {
     if (!error)

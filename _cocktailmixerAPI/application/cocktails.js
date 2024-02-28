@@ -65,5 +65,5 @@ async function getCocktails(db, ingredientsData) {
 }
 
 module.exports = {
-    getPossibleCocktails
+    getPossibleCocktails,
 };
