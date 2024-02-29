@@ -23,7 +23,7 @@ async function getCocktails(db, ingredientsData) {
     const cocktails = [];
     const allCocktails = await db.all('SELECT * FROM cocktails WHERE strAlcoholic = "Alcoholic"');
     for (const cocktail of allCocktails) {
-        let newCocktail = { cocktail: "", ingredients: [] };
+        let newCocktail = { cocktail: "", idDrink: "",ingredients: [] };
         for (const option in cocktail) {
             if (option.startsWith('strIngredient')) {
                 if (cocktail[option] === null) {
@@ -46,6 +46,7 @@ async function getCocktails(db, ingredientsData) {
         }
 
         newCocktail.cocktail = cocktail.strDrink;
+        newCocktail.idDrink = cocktail.idDrink;
         cocktails.push(newCocktail);
     }
 

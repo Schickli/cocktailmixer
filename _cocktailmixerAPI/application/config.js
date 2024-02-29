@@ -53,8 +53,26 @@ async function getConfig(db) {
     const sql_select = `SELECT * FROM config ORDER BY id DESC LIMIT 1`;
 
     const row = await db.get(sql_select, []);
+    const config = {};
+    const bottles = [];
 
-    return row;
+    for (let i = 1; i <= 6; i++) {
+        if (row["bottle" + i] === null || row["bottle" + i] === 0) {
+            bottles.push({position: "Bottle " + i,idIngrediant: 0, name: ""});
+            continue;
+        }
+
+        const sql_select = `SELECT strIngredient1 FROM ingredients WHERE id = ?`;
+        const row2 = await db.get(sql_select, [row["bottle" + i]]);
+        bottles.push({
+            position: "Bottle " + i,
+            idIngrediant: row["bottle" + i],
+            name: row2.strIngredient1
+        });
+    }
+
+    config.bottles = bottles;
+    return config;
 }
 
 module.exports = {

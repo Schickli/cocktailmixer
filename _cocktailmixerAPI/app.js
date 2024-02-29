@@ -8,9 +8,14 @@ const { open } = require('sqlite');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
+
+app.use(cors({
+    origin: '*' // only allow requests from this origin
+  }));
 
 const options = {
     definition: {
