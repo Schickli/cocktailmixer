@@ -30,13 +30,14 @@ export default function CocktailSelection() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    fetch(
-      "https://curly-dollop-46wwp55gpgph4p7-3001.app.github.dev/cocktails/possible"
-    )
+    fetch("http://192.168.1.169:3001/cocktails/possible")
       .then((response) => response.json())
       .then((data) => {
         setCount(data.shift().total);
         setCocktails(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
       });
   }, []);
 

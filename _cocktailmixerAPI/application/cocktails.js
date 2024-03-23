@@ -3,36 +3,23 @@ const ingredients = require('./ingredients');
 
 async function getPossibleCocktails(db) {
     const configData = await config.getConfig(db);
-    const ingredientsData = await getIngredients(db, configData);
-    return await getCocktails(db, ingredientsData);;
-}
-
-async function getIngredients(db, configData) {
-    const ingredientsData = [];
-
-    for (const option in configData) {
-        if (option.startsWith('bottle') && configData[option] !== 0) {
-            const ingredient = await ingredients.getIngredientById(db, configData[option]);
-            ingredientsData.push(ingredient);
-        }
-    }
-    return ingredientsData;
+    return await getCocktails(db, configData);;
 }
 
 async function getCocktails(db, ingredientsData) {
     const cocktails = [];
     const allCocktails = await db.all('SELECT * FROM cocktails WHERE strAlcoholic = "Alcoholic"');
     for (const cocktail of allCocktails) {
-        let newCocktail = { cocktail: "", idDrink: "",ingredients: [] };
+        let newCocktail = { cocktail: "", idDrink: "", ingredients: [] };
         for (const option in cocktail) {
             if (option.startsWith('strIngredient')) {
-                if (cocktail[option] === null) {
+                if (cocktail[option] === null || cocktail[option] === "") {
                     continue;
                 }
 
                 let match = false;
-                for (const configIngredient of ingredientsData) {
-                    if (configIngredient.strIngredient1 === cocktail[option]) {
+                for (const configIngredient of ingredientsData.bottles) {
+                    if (configIngredient.name === cocktail[option]) {
                         match = true
                     }
                 }

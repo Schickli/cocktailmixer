@@ -15,7 +15,7 @@ const PORT = 3001;
 
 app.use(cors({
     origin: '*' // only allow requests from this origin
-  }));
+}));
 
 const options = {
     definition: {
@@ -234,7 +234,7 @@ app.get('/cocktails/possible', async (req, res) => {
         res.send(possibleCocktails);
     } catch (error) {
         console.log(error);
-        res.status(505).send('Error occurred');
+        res.status(500).send({ "error": 'Error occurred' });
     }
 });
 

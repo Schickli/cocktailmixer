@@ -12,10 +12,13 @@ export default function CocktailSelection() {
   const [ingredients, setIngredients] = useState([]);
 
   useEffect(() => {
-    fetch("https://curly-dollop-46wwp55gpgph4p7-3001.app.github.dev/config")
+    fetch("http://192.168.1.169:3001/config")
       .then((response) => response.json())
       .then((data) => {
         setConfig(data.bottles);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
       });
   });
 
