@@ -23,6 +23,18 @@ async function getIngredientById(db, id) {
     }
 }
 
+async function searchIngredients(db, query) {
+    const sql_select = `SELECT * FROM ingredients WHERE strIngredient1 LIKE ?`;
+    const params = [`%${query}%`];
+
+    try {
+        const rows = await db.all(sql_select, params);
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function getMostUsedIngredients(db) {
 
     // Hole alle Cocktails
@@ -63,5 +75,6 @@ async function getMostUsedIngredients(db) {
 module.exports = {
     getIngredients,
     getIngredientById,
-    getMostUsedIngredients
+    getMostUsedIngredients,
+    searchIngredients
 };

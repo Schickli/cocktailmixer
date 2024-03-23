@@ -5,7 +5,7 @@ _frontend/node_modules
 _frontend//.pnp
 _frontend/.pnp.js
 _frontend/.yarn/install-state.gz
-_cocktailmixerAPI/node_modules
+_api/node_modules
 
 # testing
 /coverage

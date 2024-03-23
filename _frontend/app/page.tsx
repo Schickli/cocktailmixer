@@ -55,19 +55,20 @@ export default function CocktailSelection() {
   }, [api]);
 
   return (
-    <div className="min-h-screen">
-      <nav className="top-0 w-full flex justify-end p-2 absolute">
-        <Link href="/settings">
+    <div className="">
+      <nav className="top-0 w-full flex justify-around p-2 items-center my-2">
+        <div className=" text-center text-sm text-muted-foreground">
+          Cocktail {current} of {count} possible
+        </div>
+        <Link href="/settings" className="justify-end">
           <LuSettings size={30} />
         </Link>
       </nav>
-      <div className="py-2 text-center text-sm text-muted-foreground mb-3">
-        Cocktail {current} of {count} possible
-      </div>
+
       <div className="flex justify-center align-middle">
         {count > 0 && (
           <Carousel setApi={setApi}>
-            <CarouselContent className="max-w-[45rem]">
+            <CarouselContent className="max-w-[43.5rem]">
               {cocktails.map((drink: any, index) => (
                 <CarouselItem key={index}>
                   <Card>

@@ -177,7 +177,35 @@ app.get('/ingredients/mostUsed', async (req, res) => {
         res.send(ingredientsData);
     } catch (error) {
         console.log(error);
-        res.status(505).send('Error occurred');
+        res.status(500).send('Error occurred');
+    }
+});
+
+/**
+ * @swagger
+ * /ingredients/search:
+ *   get:
+ *     tags: [Ingredients]
+ *     summary: Search for ingredients by name
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Name of the ingredient to search for
+ *     responses:
+ *       200:
+ *         description: Ingredients list
+ */
+app.get('/ingredients/search', async (req, res) => {
+    try {
+        const name = req.query.name;
+        const ingredientsData = await ingredients.searchIngredients(db, name);
+        res.send(ingredientsData);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Error occurred');
     }
 });
 
