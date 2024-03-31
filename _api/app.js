@@ -93,7 +93,7 @@ app.get('/config', async (req, res) => {
         res.send(configData);
     } catch (error) {
         console.log(error);
-        res.status(505).send('Error occurred');
+        res.status(505).send({ "error": "Error occurred" });
     }
 });
 
@@ -108,20 +108,22 @@ app.get('/config', async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               bottle1:
- *                 type: integer
- *               bottle2:
- *                 type: integer
- *               bottle3:
- *                 type: integer
- *               bottle4:
- *                 type: integer
- *               bottle5:
- *                 type: integer
- *               bottle6:
- *                 type: integer
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 bottle1:
+ *                   type: integer
+ *                 bottle2:
+ *                   type: integer
+ *                 bottle3:
+ *                   type: integer
+ *                 bottle4:
+ *                   type: integer
+ *                 bottle5:
+ *                   type: integer
+ *                 bottle6:
+ *                   type: integer
  *     responses:
  *       200:
  *         description: Config file has been updated
@@ -129,14 +131,14 @@ app.get('/config', async (req, res) => {
 app.post('/config', async (req, res) => {
     try {
         await config.setConfig(db, req.body);
-        res.send('Config file has been updated');
+        res.send({ "message": 'Config file has been updated' });
     } catch (error) {
         if (error.message === "Config is empty or undefined") {
             console.log(error);
-            res.status(400).send('Config is empty or undefined');
+            res.status(400).send({ "message": 'Config is empty or undefined' });
         } else {
             console.log(error);
-            res.status(505).send('Error occurred');
+            res.status(505).send({ "error": "Error occurred" });
         }
     }
 });
@@ -157,7 +159,7 @@ app.get('/ingredients', async (req, res) => {
         res.send(ingredientsData);
     } catch (error) {
         console.log(error);
-        res.status(505).send('Error occurred');
+        res.status(505).send({ "error": "Error occurred" });
     }
 });
 
@@ -177,7 +179,7 @@ app.get('/ingredients/mostUsed', async (req, res) => {
         res.send(ingredientsData);
     } catch (error) {
         console.log(error);
-        res.status(500).send('Error occurred');
+        res.status(505).send({ "error": "Error occurred" });
     }
 });
 
@@ -205,7 +207,7 @@ app.get('/ingredients/search', async (req, res) => {
         res.send(ingredientsData);
     } catch (error) {
         console.log(error);
-        res.status(500).send('Error occurred');
+        res.status(505).send({ "error": "Error occurred" });
     }
 });
 
@@ -230,7 +232,7 @@ app.get('/ingredients/search', async (req, res) => {
 app.get('/ingredients/:id', async (req, res) => {
     try {
         if (isNaN(req.params.id)) {
-            res.status(400).send('Id must be a number');
+            res.status(400).send({ "message": 'Id must be a number' });
             return;
         }
         const ingredient = await ingredients.getIngredientById(db, req.params.id);
@@ -238,10 +240,10 @@ app.get('/ingredients/:id', async (req, res) => {
     } catch (error) {
         if (error.message === "Ingredient not found") {
             console.log(error);
-            res.status(404).send('Ingredient not found');
+            res.status(404).send({ "message": 'Ingredient not found' });
         } else {
             console.log(error);
-            res.status(505).send('Error occurred');
+            res.status(505).send({ "error": "Error occurred" });
         }
     }
 });
@@ -307,10 +309,10 @@ app.post('/order', async (req, res) => {
     } catch (error) {
         if (error.message === "Cocktail not found") {
             console.log(error);
-            res.status(404).send('Cocktail not found');
+            res.status(404).send({"message":'Cocktail not found'});
         } else {
             console.log(error);
-            res.status(505).send('Error occurred');
+            res.status(500).send({ "error": 'Error occurred' });
         }
     }
 });
@@ -331,7 +333,7 @@ app.get('/order', async (req, res) => {
         res.send(orders);
     } catch (error) {
         console.log(error);
-        res.status(505).send('Error occurred');
+        res.status(500).send({ "error": 'Error occurred' });
     }
 });
 
@@ -367,7 +369,7 @@ app.get('/order/:id', async (req, res) => {
             res.status(404).send('Order not found');
         } else {
             console.log(error);
-            res.status(505).send('Error occurred');
+            res.status(500).send({ "error": 'Error occurred' });
         }
     }
 })

@@ -26,13 +26,13 @@ async function createConfigTable(db) {
 }
 
 async function insertConfig(db, config) {
-    if(config.bottle1 === undefined || config.bottle2 === undefined || config.bottle3 === undefined || config.bottle4 === undefined || config.bottle5 === undefined || config.bottle6 === undefined) {
+    if(config[0].bottle1 === undefined || config[0].bottle2 === undefined || config[0].bottle3 === undefined || config[0].bottle4 === undefined || config[0].bottle5 === undefined || config[0].bottle6 === undefined) {
         throw new Error("Config is empty or undefined");
     }
 
     const sql_insert = `INSERT INTO config (bottle1, bottle2, bottle3, bottle4, bottle5, bottle6) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    await db.run(sql_insert, [config.bottle1, config.bottle2, config.bottle3, config.bottle4, config.bottle5, config.bottle6]);
+    await db.run(sql_insert, [config[0].bottle1, config[0].bottle2, config[0].bottle3, config[0].bottle4, config[0].bottle5, config[0].bottle6]);
     console.log("Successful insertion of the config");
 }
 
