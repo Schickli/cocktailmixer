@@ -14,7 +14,7 @@ export default function CocktailSelection() {
   const [filterItems, setFilterItems] = useState([]);
   const [search, setSearch] = useState("");
   const [activeBottle, setActiveBottle] = useState("");
-  const [activeIngredient, setActiveIngredient] = useState(0);
+  const [activeIngredient, setActiveIngredient] = useState(-1);
 
   useEffect(() => {
     fetch("http://192.168.1.169:3001/config")
@@ -89,7 +89,7 @@ export default function CocktailSelection() {
   }
 
   function selectBottle(bottle: string) {
-    if (activeIngredient !== 0) {
+    if (activeIngredient !== -1) {
       config.map((item: any) => {
         if (item.position === bottle) {
           item.idIngrediant = activeIngredient;
@@ -103,7 +103,7 @@ export default function CocktailSelection() {
       });
 
       setActiveBottle("");
-      setActiveIngredient(0);
+      setActiveIngredient(-1);
       return;
     }
 
@@ -122,7 +122,7 @@ export default function CocktailSelection() {
           item.idIngrediant = ingredient;
           const selectedIngredient = ingredients.find(
             (i: any) => i.id === ingredient
-          );
+          ) ;
           item.name = selectedIngredient
             ? (selectedIngredient as any).strIngredient1
             : "";
@@ -130,12 +130,12 @@ export default function CocktailSelection() {
       });
 
       setActiveBottle("");
-      setActiveIngredient(0);
+      setActiveIngredient(-1);
       return;
     }
 
     if (ingredient === activeIngredient) {
-      setActiveIngredient(0);
+      setActiveIngredient(-1);
       return;
     }
 
@@ -174,7 +174,7 @@ export default function CocktailSelection() {
                       }
                       onClick={() => selectBottle(bottle.position)}
                     >
-                      {activeIngredient === 0 ? "Select" : "Assign"}
+                      {activeIngredient === -1 ? "Select" : "Assign"}
                     </Button>
                   </div>
                 </div>
@@ -194,11 +194,11 @@ export default function CocktailSelection() {
               <div className="overflow-y-scroll max-h-[21.5rem] w-full flex-wrap flex h-min">
                 <div
                   className={`w-min text-nowrap py-2 px-4 border-2 rounded  m-1 h-min ${
-                    activeIngredient === -1
+                    activeIngredient === 0
                       ? "border-slate-900 bg-gray-50"
                       : "border-slate-200"
                   }`}
-                  onClick={() => selectIngredient(-1)}
+                  onClick={() => selectIngredient(0)}
                 >
                   <Label>No ingredient</Label>
                 </div>

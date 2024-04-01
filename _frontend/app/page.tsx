@@ -66,7 +66,7 @@ export default function CocktailSelection() {
       </nav>
 
       <div className="flex justify-center align-middle">
-        {count > 0 && (
+        {count > 0 ? (
           <Carousel setApi={setApi}>
             <CarouselContent className="max-w-[43.5rem]">
               {cocktails.map((drink: any, index) => (
@@ -124,7 +124,7 @@ export default function CocktailSelection() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-        )}
+        ): <div className="text-center text-slate-300">No cocktails available</div>}
       </div>
     </div>
   );
