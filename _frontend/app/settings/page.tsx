@@ -7,11 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LiaSave } from "react-icons/lia";
+import { DetailIngredient, Ingredient } from "@/lib/ingredient";
+import { ConfigRequest, ConfigResponse, DetailBottle } from "@/lib/config";
+
 
 export default function CocktailSelection() {
-  const [config, setConfig] = useState([]);
-  const [ingredients, setIngredients] = useState([]);
-  const [filterItems, setFilterItems] = useState([]);
+  const [config, setConfig] = useState<DetailBottle[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [filterItems, setFilterItems] = useState<Ingredient[]>([]);
   const [search, setSearch] = useState("");
   const [activeBottle, setActiveBottle] = useState("");
   const [activeIngredient, setActiveIngredient] = useState(-1);
@@ -19,7 +22,7 @@ export default function CocktailSelection() {
   useEffect(() => {
     fetch("http://192.168.1.169:3001/config")
       .then((response) => response.json())
-      .then((data) => {
+      .then((data:ConfigResponse) => {
         setConfig(data.bottles);
       })
       .catch((error) => {
@@ -42,8 +45,7 @@ export default function CocktailSelection() {
     const formattedConfig = config.reduce((acc: any, item: any, i: number) => {
       acc[`bottle${i + 1}`] = item.idIngrediant;
       return acc;
-    }, {});
-    console.log(formattedConfig);
+    }, {} as ConfigRequest);
 
     fetch("http://192.168.1.169:3001/config", {
       method: "POST",
@@ -80,8 +82,8 @@ export default function CocktailSelection() {
     setSearch(value);
   }
 
-  function sortItemsByAlphabet(data: any) {
-    const sortedItems = data.sort((a: any, b: any) =>
+  function sortItemsByAlphabet(data: Ingredient[]) {
+    const sortedItems = data.sort((a: Ingredient, b: Ingredient) =>
       a.strIngredient1.localeCompare(b.strIngredient1)
     );
 
@@ -90,14 +92,14 @@ export default function CocktailSelection() {
 
   function selectBottle(bottle: string) {
     if (activeIngredient !== -1) {
-      config.map((item: any) => {
+      config.map((item: DetailBottle) => {
         if (item.position === bottle) {
           item.idIngrediant = activeIngredient;
           const selectedIngredient = ingredients.find(
-            (ingredient: any) => ingredient.id === activeIngredient
+            (ingredient: Ingredient) => ingredient.id === activeIngredient
           );
           item.name = selectedIngredient
-            ? (selectedIngredient as any).strIngredient1
+            ? (selectedIngredient as Ingredient).strIngredient1
             : "";
         }
       });
@@ -117,14 +119,14 @@ export default function CocktailSelection() {
 
   function selectIngredient(ingredient: number) {
     if (activeBottle != "") {
-      config.map((item: any) => {
+      config.map((item: DetailBottle) => {
         if (item.position === activeBottle) {
           item.idIngrediant = ingredient;
           const selectedIngredient = ingredients.find(
-            (i: any) => i.id === ingredient
+            (i: Ingredient) => i.id === ingredient
           ) ;
           item.name = selectedIngredient
-            ? (selectedIngredient as any).strIngredient1
+            ? (selectedIngredient as Ingredient).strIngredient1
             : "";
         }
       });
@@ -156,7 +158,7 @@ export default function CocktailSelection() {
         <div className="mr-5">
           {config.length > 0 && (
             <div className="flex flex-col space-y-2">
-              {config.map((bottle: any, index) => (
+              {config.map((bottle: DetailBottle, index) => (
                 <div className="w-full" key={index}>
                   <Label htmlFor={bottle.position}>{bottle.position}</Label>
                   <div className="flex space-x-3">
@@ -164,6 +166,7 @@ export default function CocktailSelection() {
                       value={bottle.name}
                       className="w-48"
                       id={bottle.position}
+                      readOnly
                     />
                     <Button
                       variant="outline"

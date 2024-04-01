@@ -22,9 +22,11 @@ import { LuSettings } from "react-icons/lu";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Cocktail } from "@/lib/cocktails";
+import { DetailIngredient } from "@/lib/ingredient";
 
 export default function CocktailSelection() {
-  const [cocktails, setCocktails] = useState([{ cocktail: "test" }]);
+  const [cocktails, setCocktails] = useState([]);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
@@ -69,7 +71,7 @@ export default function CocktailSelection() {
         {count > 0 ? (
           <Carousel setApi={setApi}>
             <CarouselContent className="max-w-[43.5rem]">
-              {cocktails.map((drink: any, index) => (
+              {cocktails.map((drink: Cocktail, index) => (
                 <CarouselItem key={index}>
                   <Card>
                     <div className="flex">
@@ -95,7 +97,7 @@ export default function CocktailSelection() {
                         <CardContent className="flex flex-col">
                           <CardDescription className="grid grid-cols-2 gap-4 mb-5 w-full pt-5">
                             {drink.ingredients.map(
-                              (ingredient: any, index: number) => (
+                              (ingredient: DetailIngredient, index: number) => (
                                 <div key={index} className="flex flex-row">
                                   {ingredient.match ? (
                                     <b className="text-green-500">
