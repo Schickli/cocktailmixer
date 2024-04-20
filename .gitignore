@@ -6,6 +6,7 @@ _frontend//.pnp
 _frontend/.pnp.js
 _frontend/.yarn/install-state.gz
 _api/node_modules
+_mqttServer/node_modules
 
 # testing
 /coverage
