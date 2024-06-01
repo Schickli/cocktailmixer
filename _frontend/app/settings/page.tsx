@@ -7,26 +7,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LiaSave } from "react-icons/lia";
-import { DetailIngredient, Ingredient } from "@/lib/ingredient";
+import { Ingredient } from "@/lib/ingredient";
+import Loader from "@/components/loader";
 import { ConfigRequest, ConfigResponse, DetailBottle } from "@/lib/config";
-
+import { useRouter } from "next/navigation";
 
 export default function CocktailSelection() {
+  const router = useRouter();
   const [config, setConfig] = useState<DetailBottle[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [loading, setLoading] = useState(false);
   const [filterItems, setFilterItems] = useState<Ingredient[]>([]);
   const [search, setSearch] = useState("");
   const [activeBottle, setActiveBottle] = useState("");
   const [activeIngredient, setActiveIngredient] = useState(-1);
 
   useEffect(() => {
+    setLoading(true);
     fetch("http://192.168.1.169:3001/config")
       .then((response) => response.json())
-      .then((data:ConfigResponse) => {
+      .then((data: ConfigResponse) => {
         setConfig(data.bottles);
       })
       .catch((error) => {
         console.error("Error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
 
     fetch("http://192.168.1.169:3001/ingredients")
@@ -38,10 +45,14 @@ export default function CocktailSelection() {
       })
       .catch((error) => {
         console.error("Error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
   function save() {
+    setLoading(true);
     const formattedConfig = config.reduce((acc: any, item: any, i: number) => {
       acc[`bottle${i + 1}`] = item.idIngrediant;
       return acc;
@@ -54,12 +65,14 @@ export default function CocktailSelection() {
       },
       body: JSON.stringify([formattedConfig]),
     })
-      .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        router.push("/");
       })
       .catch((error) => {
         console.error("Error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -70,6 +83,8 @@ export default function CocktailSelection() {
       return;
     }
 
+    setLoading(true);
+
     fetch("http://192.168.1.169:3001/ingredients/search?name=" + value)
       .then((response) => response.json())
       .then((data) => {
@@ -77,6 +92,9 @@ export default function CocktailSelection() {
       })
       .catch((error) => {
         console.error("Error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
 
     setSearch(value);
@@ -124,7 +142,7 @@ export default function CocktailSelection() {
           item.idIngrediant = ingredient;
           const selectedIngredient = ingredients.find(
             (i: Ingredient) => i.id === ingredient
-          ) ;
+          );
           item.name = selectedIngredient
             ? (selectedIngredient as Ingredient).strIngredient1
             : "";
@@ -146,13 +164,16 @@ export default function CocktailSelection() {
 
   return (
     <div className="min-h-screen p-2">
-      <nav className="top-0 w-full flex justify-end">
-        <div className="mr-5" onClick={save}>
-          <LiaSave size={30} />
-        </div>
-        <Link href="/">
-          <LuSettings size={30} />
-        </Link>
+      <nav className="top-0 w-full flex justify-end items-center">
+        {loading && <Loader className="mr-5" />}
+        <Button className="mr-5" onClick={save} disabled={loading}>
+          <LiaSave size={20} />
+        </Button>
+        <Button variant="secondary" asChild>
+          <Link href="/">
+            <LuSettings size={20} />
+          </Link>
+        </Button>
       </nav>
       <div className="flex mt-5">
         <div className="mr-5">
@@ -167,18 +188,8 @@ export default function CocktailSelection() {
                       className="w-48"
                       id={bottle.position}
                       readOnly
-                    />
-                    <Button
-                      variant="outline"
-                      className={
-                        activeBottle === bottle.position
-                          ? "border-2 border-slate-900"
-                          : "border-slate-200"
-                      }
                       onClick={() => selectBottle(bottle.position)}
-                    >
-                      {activeIngredient === -1 ? "Select" : "Assign"}
-                    </Button>
+                    />
                   </div>
                 </div>
               ))}

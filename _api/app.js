@@ -4,6 +4,7 @@ const config = require('./application/config.js');
 const ingredients = require('./application/ingredients.js');
 const cocktails = require('./application/cocktails.js');
 const order = require('./application/order.js');
+const machineStatus = require('./application/status.js');
 const { open } = require('sqlite');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
@@ -309,7 +310,7 @@ app.post('/order', async (req, res) => {
     } catch (error) {
         if (error.message === "Cocktail not found") {
             console.log(error);
-            res.status(404).send({"message":'Cocktail not found'});
+            res.status(404).send({ "message": 'Cocktail not found' });
         } else {
             console.log(error);
             res.status(500).send({ "error": 'Error occurred' });
@@ -371,6 +372,26 @@ app.get('/order/:id', async (req, res) => {
             console.log(error);
             res.status(500).send({ "error": 'Error occurred' });
         }
+    }
+})
+
+/**
+ * @swagger
+ * /status:
+ *   get:
+ *     tags: [Status]
+ *     summary: Retrieve Machine Status
+ *     responses:
+ *       200:
+ *         description: Machine Status
+ */
+app.get('/status', async (req, res) => {
+    try {
+        const status = await machineStatus.getMachineStatus(db);
+        res.send(status);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ "error": 'Error occurred' });
     }
 })
 

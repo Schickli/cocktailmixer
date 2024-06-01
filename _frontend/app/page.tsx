@@ -19,11 +19,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "../components/ui/button";
 import { LuSettings } from "react-icons/lu";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Cocktail } from "@/lib/cocktails";
 import { DetailIngredient } from "@/lib/ingredient";
+import MachineStatus from "@/components/machineStatus";
+import { MachineStateContext } from "@/components/MachineStateProvider";
+import PlaceOrder from "@/components/placeOrder";
 
 export default function CocktailSelection() {
   const [cocktails, setCocktails] = useState([]);
@@ -57,14 +60,20 @@ export default function CocktailSelection() {
   }, [api]);
 
   return (
-    <div className="">
-      <nav className="top-0 w-full flex justify-around p-2 items-center my-2">
-        <div className=" text-center text-sm text-muted-foreground">
+    <div>
+      <nav className="top-0 w-full flex justify-end p-2 items-center space-x-5 mb-3">
+        <Button
+          variant="outline"
+          className="text-center text-sm text-muted-foreground"
+        >
           Cocktail {current} of {count} possible
-        </div>
-        <Link href="/settings" className="justify-end">
-          <LuSettings size={30} />
-        </Link>
+        </Button>
+        <MachineStatus />
+        <Button variant="secondary" asChild>
+          <Link href="/settings" className="justify-end">
+            <LuSettings size={20} />
+          </Link>
+        </Button>
       </nav>
 
       <div className="flex justify-center align-middle">
@@ -79,7 +88,7 @@ export default function CocktailSelection() {
                         <CardHeader>
                           <CardTitle>{drink.cocktail}</CardTitle>
                         </CardHeader>
-                        <CardContent className="flex  items-center justify-center ">
+                        <CardContent className="flex items-center justify-center ">
                           <Image
                             src={"/images/" + drink.idDrink + ".jpg"}
                             alt={drink.cocktail}
@@ -117,7 +126,7 @@ export default function CocktailSelection() {
                       </div>
                     </div>
                     <CardFooter className="flex flex-col">
-                      <Button className="w-full">Order</Button>
+                      <PlaceOrder />
                     </CardFooter>
                   </Card>
                 </CarouselItem>
@@ -126,7 +135,11 @@ export default function CocktailSelection() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-        ): <div className="text-center text-slate-300">No cocktails available</div>}
+        ) : (
+          <div className="text-center text-slate-300">
+            No cocktails available
+          </div>
+        )}
       </div>
     </div>
   );

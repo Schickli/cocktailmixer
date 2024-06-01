@@ -2,7 +2,7 @@
 
 # dependencies
 _frontend/node_modules
-_frontend//.pnp
+_frontend/.pnp
 _frontend/.pnp.js
 _frontend/.yarn/install-state.gz
 _api/node_modules

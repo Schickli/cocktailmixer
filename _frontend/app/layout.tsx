@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
-import { cn } from "../lib/utils"
+import { cn } from "../lib/utils";
+import { MachineStateProvider } from "../components/MachineStateProvider";
 import "./globals.css";
 
 export const fontSans = FontSans({
@@ -21,12 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(
-          "bg-background font-sans antialiased",
-          fontSans.variable
-        )}
+        className={cn("bg-background font-sans antialiased", fontSans.variable)}
       >
-        {children}
+        <MachineStateProvider>{children}</MachineStateProvider>
       </body>
     </html>
   );
