@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
       if (!req.body) throw new Error("No body provided");
       
       let data = await req.json()
-      const res = await setConfig(data[0]);
-      return NextResponse.json(res, { status: 200 });
+      await setConfig(data[0]);
+      return NextResponse.json({"message": "All good"}, { status: 200 });
   } catch (e: any) {
       return NextResponse.json({ error: e.message }, { status: 500 });
   }
