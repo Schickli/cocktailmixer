@@ -1,39 +1,40 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.vscode
 
 # dependencies
-_frontend/node_modules
-_frontend/.pnp
-_frontend/.pnp.js
-_frontend/.yarn/install-state.gz
-_api/node_modules
+_app/node_modules
+_app/.pnp
+_app/.pnp.js
+_app/.yarn/install-state.gz
+legacy_api
 _mqttServer/node_modules
 
 # testing
 /coverage
 
 # next.js
-_frontend/.next/
-_frontend/out/
+_app/.next/
+_app/out/
 
 # production
-_frontend/build
+_app/build
 
 # misc
-_frontend/.DS_Store
-_frontend/*.pem
+_app/.DS_Store
+_app/*.pem
 
 # debug
-_frontend/npm-debug.log*
-_frontend/yarn-debug.log*
-_frontend/yarn-error.log*
+_app/npm-debug.log*
+_app/yarn-debug.log*
+_app/yarn-error.log*
 
 # local env files
-_frontend/.env*.local
+_app/.env*.local
 
 # vercel
-_frontend/.vercel
+_app/.vercel
 
 # typescript
 *.tsbuildinfo
-_frontend/next-env.d.ts
+_app/next-env.d.ts
 node_modules
