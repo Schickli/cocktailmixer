@@ -1,3 +1,4 @@
+"use client";
 import {
   Drawer,
   DrawerClose,
@@ -9,18 +10,36 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { MachineStateContext } from "./MachineStateProvider";
+import CocktailSizeChooser from "./cocktailSizeChooser";
+import { FaAngleRight } from "react-icons/fa";
+import CocktailOrder from "./cocktailOrder";
 
 type PlaceOrder = {
   className?: string;
 };
 
 export default function PlaceOrder({ className }: PlaceOrder) {
-  const { machineState, setMachineState } = useContext(MachineStateContext);
+  const { machineState } = useContext(MachineStateContext);
+  const [page, setPage] = useState("size" as "size" | "order");
+  const [valueSlider, setValueSlider] = useState(200);
+
+  let title = "Cocktail size";
+  let description =
+    "Please choose the size of your cocktail according to the size of your glass!";
+
+  if (page === "order") {
+    title = "Order";
+    description = "Please customize your cocktail!";
+  }
+
+  function reset() {
+    setPage("size");
+  }
 
   return (
-    <Drawer snapPoints={[1.4]}>
+    <Drawer onClose={reset}>
       <DrawerTrigger className="w-full">
         <Button className="w-full" disabled={machineState.status !== "ready"}>
           Order
@@ -28,14 +47,33 @@ export default function PlaceOrder({ className }: PlaceOrder) {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-          <DrawerDescription>This action cannot be undone.</DrawerDescription>
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <DrawerFooter>
-          <Button>Submit</Button>
+        {page === "size" ? (
+          <CocktailSizeChooser
+            className="p-4"
+            valueSlider={valueSlider}
+            setValueSlider={setValueSlider}
+          />
+        ) : (
+          <CocktailOrder className="p-4" valueSlider={valueSlider} />
+        )}
+        <DrawerFooter className="flex justify-end">
           <DrawerClose>
-            close
+            <Button variant={"ghost"}>Cancel</Button>
           </DrawerClose>
+          {page === "size" ? (
+            <Button size={"lg"} onClick={() => setPage("order")}>
+              Continue <FaAngleRight className="h-4 w-4 ml-2" />
+            </Button>
+          ) : (
+            <DrawerClose>
+              <Button size={"lg"}>
+                Order <FaAngleRight className="h-4 w-4 ml-2" />
+              </Button>
+            </DrawerClose>
+          )}
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

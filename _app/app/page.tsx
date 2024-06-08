@@ -19,13 +19,12 @@ import {
 } from "@/components/ui/card";
 import { Button } from "../components/ui/button";
 import { LuSettings } from "react-icons/lu";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Cocktail } from "@/lib/cocktails";
 import { DetailIngredient } from "@/lib/ingredient";
 import MachineStatus from "@/components/machineStatus";
-import { MachineStateContext } from "@/components/MachineStateProvider";
 import PlaceOrder from "@/components/placeOrder";
 
 export default function CocktailSelection() {
