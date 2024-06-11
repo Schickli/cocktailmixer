@@ -21,10 +21,11 @@ export default function CocktailSelection() {
   const [search, setSearch] = useState("");
   const [activeBottle, setActiveBottle] = useState("");
   const [activeIngredient, setActiveIngredient] = useState(-1);
+  const baseUrl = window.location.origin;
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://192.168.1.169:3000/api/config")
+    fetch(baseUrl+"/api/config")
       .then((response) => response.json())
       .then((data: ConfigResponse) => {
         setConfig(data.bottles);
@@ -36,7 +37,7 @@ export default function CocktailSelection() {
         setLoading(false);
       });
 
-    fetch("http://192.168.1.169:3000/api/ingredients")
+    fetch(baseUrl+"/api/ingredients")
       .then((response) => response.json())
       .then((data) => {
         let sorted = sortItemsByAlphabet(data);
@@ -58,7 +59,8 @@ export default function CocktailSelection() {
       return acc;
     }, {} as ConfigRequest);
 
-    fetch("http://192.168.1.169:3000/api/config", {
+    
+    fetch(baseUrl+"/api/config", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,8 +86,8 @@ export default function CocktailSelection() {
     }
 
     setLoading(true);
-
-    fetch("http://192.168.1.169:3000/api/ingredients/search?name=" + value)
+    
+    fetch(baseUrl+"/api/ingredients/search?name=" + value)
       .then((response) => response.json())
       .then((data) => {
         setFilterItems(data);

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useContext, useState } from "react";
-import { MachineStateContext } from "./MachineStateProvider";
+import { MachineStateContext } from "./machineStateProvider";
 import CocktailSizeChooser from "./cocktailSizeChooser";
 import { FaAngleRight } from "react-icons/fa";
 import CocktailOrder from "./cocktailOrder";

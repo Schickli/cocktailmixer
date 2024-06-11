@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useContext } from "react";
 import { Button } from "./ui/button";
-import { MachineStateContext } from "./MachineStateProvider";
+import { MachineStateContext } from "./machineStateProvider";
+const baseUrl = window.location.origin;
 
 const statusStyles = {
   ready: "bg-green-500",
@@ -14,7 +15,7 @@ export default function MachineStatus() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch("http://192.168.1.169:3000/api/status", { signal: AbortSignal.timeout(2500)  })
+      fetch(baseUrl+"/api/status", { signal: AbortSignal.timeout(2500)  })
         .then((response) => response.json())
         .then((data) => {
           setMachineState(data);
