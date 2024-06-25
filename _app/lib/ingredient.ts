@@ -4,7 +4,7 @@ export type Ingredient = {
 };
 
 export type DetailIngredient = {
-    ingredient: number;
+    ingredient: string;
     measure: string;
     match: boolean;
 };

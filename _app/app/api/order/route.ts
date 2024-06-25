@@ -1,10 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
 import { orderCocktail, getOrders } from "./order";
+import { OrderRequest } from "@/lib/order";
 
 export async function POST(req: Request) {
   try {
-    let data = await req.json();
-    const id = await orderCocktail(data.idDrink, data.glassSize);
+    let data = await req.json() as OrderRequest;
+    const id = await orderCocktail(data.idBaseDrink, data.glassSize, data.ingredients);
     return NextResponse.json(
       { message: "Producing", orderId: id },
       { status: 200 }

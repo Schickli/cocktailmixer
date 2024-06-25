@@ -1,5 +1,8 @@
+import { DetailIngredient } from "./ingredient";
+
 export type OrderRequest = {
-    idDrink: number;
+    idBaseDrink: number;
+    ingredients: DetailIngredient[];
     glassSize: number;
 };
 

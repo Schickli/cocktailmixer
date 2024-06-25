@@ -19,17 +19,19 @@ import {
 } from "@/components/ui/card";
 import { Button } from "../components/ui/button";
 import { LuSettings } from "react-icons/lu";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Cocktail } from "@/lib/cocktails";
 import { DetailIngredient } from "@/lib/ingredient";
 import MachineStatus from "@/components/machineStatus";
 import PlaceOrder from "@/components/placeOrder";
+import { CocktailContext } from "@/components/context/cocktailProvider";
 
 export default function CocktailSelection() {
-  const [cocktails, setCocktails] = useState([]);
-  const [api, setApi] = useState<CarouselApi>();
+  const { setCocktail } = useContext(CocktailContext);
+  const [cocktails, setCocktails] = useState<Cocktail[]>([]);
+  const [api, setApi] = useState<CarouselApi | null>(null);
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
@@ -37,26 +39,40 @@ export default function CocktailSelection() {
     fetch("http://192.168.1.169:3000/api/cocktails/possible")
       .then((response) => response.json())
       .then((data) => {
-        setCount(data.shift().total);
+        const total = data.shift().total;
+        setCount(total);
         setCocktails(data);
+        if (data.length > 0) {
+          setCocktail(data[0]);
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }, [setCocktail]);
 
   useEffect(() => {
-    if (!api) {
+    if (!api || cocktails.length === 0) {
       return;
     }
 
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
+    const updateCurrentCocktail = () => {
+      const selectedSnapIndex = api.selectedScrollSnap();
+      if (selectedSnapIndex >= 0 && selectedSnapIndex < cocktails.length) {
+        setCurrent(selectedSnapIndex + 1);
+        setCocktail(cocktails[selectedSnapIndex]);
+      }
+    };
 
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
+    setCount(api.scrollSnapList().length);
+    updateCurrentCocktail();
+
+    api.on("select", updateCurrentCocktail);
+
+    return () => {
+      api.off("select", updateCurrentCocktail);
+    };
+  }, [api, cocktails, setCocktail]);
 
   return (
     <div>
