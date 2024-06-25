@@ -36,7 +36,7 @@ export default function CocktailSelection() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://192.168.1.169:3000/api/cocktails/possible")
+    fetch("/api/cocktails/possible")
       .then((response) => response.json())
       .then((data) => {
         const total = data.shift().total;
